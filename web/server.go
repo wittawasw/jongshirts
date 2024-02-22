@@ -111,10 +111,12 @@ func authenticationHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "sessions")
 	// Authentication goes here
 	// ...
-
+	email:=   r.FormValue("email")
 	// Set user as authenticated
 	session.Values["authenticated"] = true
+	session.Values["username"] = email
 	session.Save(r, w)
-
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	
 }
