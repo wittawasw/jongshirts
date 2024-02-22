@@ -6,7 +6,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/oddsteam/jongshirts/internal/db"
+)
+
+var (
+	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
+	key   = []byte("super-secret-key")
+	store = sessions.NewCookieStore(key)
 )
 
 type ShirtPageData struct {
@@ -36,6 +43,7 @@ func Start() {
 	r.HandleFunc("/cart", cartHandler).Methods("POST")
 	r.HandleFunc("/showcart", ShowCart)
 	r.HandleFunc("/login", loginHandler)
+	r.HandleFunc("/auth", authenticationHandler)
 	http.ListenAndServe(":8080", r)
 }
 
@@ -66,7 +74,7 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 	// ctx := context.Background()
 
 	for key, _ := range r.Form {
-		client.LPush("selectedShirt",key) 
+		client.LPush("selectedShirt", key)
 	}
 
 	http.Redirect(w, r, "/showcart", http.StatusSeeOther)
@@ -79,21 +87,34 @@ func ShowCart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := db.NewClient()
-	data,err := client.LRange("selectedShirt", 0, -1).Result()
+	data, err := client.LRange("selectedShirt", 0, -1).Result()
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	fmt.Println(data)
 
 	tmpl.Execute(w, data)
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request){
+func loginHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("web/templates/login.html")
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	tmpl.Execute(w, nil)
 
+}
+
+func authenticationHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "sessions")
+	// Authentication goes here
+	// ...
+
+	// Set user as authenticated
+	session.Values["authenticated"] = true
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
