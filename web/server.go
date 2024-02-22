@@ -2,10 +2,15 @@ package server
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
+
+type ShirtPageData struct {
+    PageTitle string
+}
 
 // start the web server r.HandleFunc("/books/{title}", CreateBook).Methods("POST")
 
@@ -19,6 +24,15 @@ func Start() {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("This is Home handler")
+	tmpl, err := template.ParseFiles("web/templates/home.html")
+	if err != nil {
+		fmt.Println(err)
+	}
+	data := ShirtPageData{
+		PageTitle: "Home page",
+	}
+		
+	
+	tmpl.Execute(w, data)
 
 }
