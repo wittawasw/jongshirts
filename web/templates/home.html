@@ -7,5 +7,17 @@
   </head>
   <body>
     <h1>{{.PageTitle}}</h1>
+    <ul>
+      {{range .ShirtList}}
+      <li>
+        <ul>
+          <li>{{.Name}}</li>
+          <li>{{.Price}}</li>
+          <li>{{.Color}}</li>
+          <li>{{.Size}}</li>
+        </ul>
+      </li>
+      {{end}}
+    </ul>
   </body>
 </html>
