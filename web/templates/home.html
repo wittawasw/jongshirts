@@ -7,17 +7,22 @@
   </head>
   <body>
     <h1>{{.PageTitle}}</h1>
-    <ul>
-      {{range .ShirtList}}
-      <li>
-        <ul>
-          <li>{{.Name}}</li>
-          <li>{{.Price}}</li>
-          <li>{{.Color}}</li>
-          <li>{{.Size}}</li>
-        </ul>
-      </li>
-      {{end}}
-    </ul>
+    <form action="/cart" method="post">
+      <ul>
+        {{range .ShirtList}}
+        <li>
+          <ul for="shirt-{{.Name}}">
+            <li>{{.Name}}</li>
+            <li>{{.Price}}</li>
+            <li>{{.Color}}</li>
+            <li>{{.Size}}</li>
+          </ul>
+          <!-- * select box -->
+          <input type="checkbox" name="shirt-{{.Name}}">
+        </li>
+        {{end}}
+      </ul>
+      <input type="submit">
+    </form>
   </body>
 </html>
