@@ -64,12 +64,12 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 		SelectedShirts = append(SelectedShirts, key)
 	}
 
-	fmt.Println(SelectedShirts)
+	// fmt.Println(SelectedShirts)
 
-	tmpl, err := template.ParseFiles("web/templates/detail.html")
-	if err != nil {
-		fmt.Println(err)
-	}
-	tmpl.Execute(w, SelectedShirts)
+	// tmpl, err := template.ParseFiles("web/templates/detail.html")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// tmpl.Execute(w, SelectedShirts)
 
 }
