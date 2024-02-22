@@ -14,6 +14,7 @@ type ShirtPageData struct {
 }
 
 type ShirtList struct {
+	Id int
 	Name  string
 	Size  string
 	Price string
@@ -27,8 +28,8 @@ func Start() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", HomeHandler)
+	r.HandleFunc("/cart", cartHandler).Methods("POST")
 	http.ListenAndServe(":8080", r)
-
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,13 +40,26 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	data := ShirtPageData{
 		PageTitle: "Home page",
 		ShirtList: []ShirtList{
-			{Name: "shirt 1", Price: "100", Color: "Red", Size: "XL"},
-			{Name: "shirt 2", Price: "50", Color: "Green", Size: "L"},
-			{Name: "shirt 3", Price: "300", Color: "Blue-green", Size: "S"},
-			{Name: "shirt 4", Price: "77", Color: "Black", Size: "XXXL"},
+			{Id: 1, Name: "shirt 1", Price: "100", Color: "Red", Size: "XL"},
+			{Id: 2, Name: "shirt 2", Price: "50", Color: "Green", Size: "L"},
+			{Id: 3, Name: "shirt 3", Price: "300", Color: "Blue-green", Size: "S"},
+			{Id: 4, Name: "shirt 4", Price: "77", Color: "Black", Size: "XXXL"},
 		},
 	}
 
 	tmpl.Execute(w, data)
 
+}
+
+func cartHandler(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Cart handler")
+
+	var selectedShirt []string
+
+	for key := range r.Form {
+
+		fmt.Println(key)
+		
+	  }
+	  fmt.Println(selectedShirt,"selectedShirt")
 }
