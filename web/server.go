@@ -35,6 +35,7 @@ func Start() {
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/cart", cartHandler).Methods("POST")
 	r.HandleFunc("/showcart", ShowCart)
+	r.HandleFunc("/login", loginHandler)
 	http.ListenAndServe(":8080", r)
 }
 
@@ -65,7 +66,7 @@ func cartHandler(w http.ResponseWriter, r *http.Request) {
 	// ctx := context.Background()
 
 	for key, _ := range r.Form {
-		client.LPush("selectedShirt",key)
+		client.LPush("selectedShirt",key) 
 	}
 
 	http.Redirect(w, r, "/showcart", http.StatusSeeOther)
@@ -86,4 +87,13 @@ func ShowCart(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(data)
 
 	tmpl.Execute(w, data)
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request){
+	tmpl, err := template.ParseFiles("web/templates/login.html")
+	if err != nil {
+		fmt.Println(err)
+	}
+	tmpl.Execute(w, nil)
+
 }
