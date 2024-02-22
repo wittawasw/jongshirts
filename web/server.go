@@ -19,6 +19,7 @@ var (
 type ShirtPageData struct {
 	PageTitle string
 	ShirtList []ShirtList
+	Username string
 }
 
 type ShirtList struct {
@@ -48,10 +49,21 @@ func Start() {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := store.Get(r, "sessions")
+	if err != nil{
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return 
+	}
+	if session.Values["username"] == nil{
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 	tmpl, err := template.ParseFiles("web/templates/home.html")
 	if err != nil {
 		fmt.Println(err)
 	}
+	username:= session.Values["username"].(string)
+
 	data := ShirtPageData{
 		PageTitle: "Home page",
 		ShirtList: []ShirtList{
@@ -60,6 +72,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			{Id: 3, Name: "shirt 3", Price: "300", Color: "Blue-green", Size: "S"},
 			{Id: 4, Name: "shirt 4", Price: "77", Color: "Black", Size: "XXXL"},
 		},
+		Username: username,
 	}
 
 	tmpl.Execute(w, data)
