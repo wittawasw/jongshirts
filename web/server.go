@@ -14,11 +14,15 @@ type ShirtPageData struct {
 }
 
 type ShirtList struct {
-	Id int
+	Id    int
 	Name  string
 	Size  string
 	Price string
 	Color string
+}
+
+type Incart struct {
+	Name []string
 }
 
 // start the web server r.HandleFunc("/books/{title}", CreateBook).Methods("POST")
@@ -28,7 +32,7 @@ func Start() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/cart", cartHandler).Methods("POST")
+	r.HandleFunc("/cart", cartHandler)
 	http.ListenAndServe(":8080", r)
 }
 
@@ -51,15 +55,21 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func cartHandler(w http.ResponseWriter, r *http.Request){
-	fmt.Println("Cart handler")
+func cartHandler(w http.ResponseWriter, r *http.Request) {
 
-	var selectedShirt []string
+	var SelectedShirts []string
 
-	for key := range r.Form {
+	r.ParseForm()
+	for key, _ := range r.Form {
+		SelectedShirts = append(SelectedShirts, key)
+	}
 
-		fmt.Println(key)
-		
-	  }
-	  fmt.Println(selectedShirt,"selectedShirt")
+	fmt.Println(SelectedShirts)
+
+	tmpl, err := template.ParseFiles("web/templates/detail.html")
+	if err != nil {
+		fmt.Println(err)
+	}
+	tmpl.Execute(w, SelectedShirts)
+
 }
