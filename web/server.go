@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/oddsteam/jongshirts/internal/db"
 )
 
 type ShirtPageData struct {
@@ -32,7 +33,8 @@ func Start() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/cart", cartHandler)
+	r.HandleFunc("/cart", cartHandler).Methods("POST")
+	r.HandleFunc("/showcart", ShowCart)
 	http.ListenAndServe(":8080", r)
 }
 
@@ -56,20 +58,32 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func cartHandler(w http.ResponseWriter, r *http.Request) {
-
-	var SelectedShirts []string
+	client := db.NewClient()
+	// var SelectedShirts []string
 
 	r.ParseForm()
+	// ctx := context.Background()
+
 	for key, _ := range r.Form {
-		SelectedShirts = append(SelectedShirts, key)
+		client.LPush("selectedShirt",key)
 	}
 
-	// fmt.Println(SelectedShirts)
+	http.Redirect(w, r, "/showcart", http.StatusSeeOther)
+}
 
-	// tmpl, err := template.ParseFiles("web/templates/detail.html")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// tmpl.Execute(w, SelectedShirts)
+func ShowCart(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("web/templates/detail.html")
+	if err != nil {
+		fmt.Println(err)
+	}
 
+	client := db.NewClient()
+	data,err := client.LRange("selectedShirt", 0, -1).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	fmt.Println(data)
+
+	tmpl.Execute(w, data)
 }
