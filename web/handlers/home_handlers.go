@@ -23,7 +23,8 @@ type ShirtList struct {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	session, err := sessions.Store.Get(r, "sessions")
+	session, err := sessions.InitSession(r)
+
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return

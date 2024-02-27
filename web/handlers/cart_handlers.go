@@ -34,7 +34,5 @@ func ShowCartHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(data)
-
 	tmpl.Execute(w, data)
 }
